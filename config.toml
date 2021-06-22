@@ -1,3 +1,10 @@
 baseURL = "http://example.org/"
 languageCode = "en-us"
-title = "My New Hugo Site"
+title = "Abstract Machines"
+theme = "book"
+
+enableGitInfo = true
+
+[params]
+BookRepo = 'https://github.com/BinderDavid/abstract-machines-script'
+BookEditPath = 'edit'
