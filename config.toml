@@ -7,4 +7,4 @@ enableGitInfo = true
 
 [params]
 BookRepo = 'https://github.com/BinderDavid/abstract-machines-script'
-BookEditPath = 'edit'
+BookEditPath = 'blob/main'
