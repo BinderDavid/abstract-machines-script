@@ -5,6 +5,10 @@ theme = "book"
 
 enableGitInfo = true
 
+pygmentsCodefences = true
+pygmentsUseClasses = true
 [params]
 BookRepo = 'https://github.com/BinderDavid/abstract-machines-script'
 BookEditPath = 'blob/main'
+
+
