@@ -17,3 +17,12 @@ weight: 3
  * **Werner Kluge**, Abstract Computing Machines: A Lambda Calculus Perspective
    *(Chapter 5 is on (variants of) the SECD machine)*
 {{< /hint >}}
+
+## Elm app
+
+<div id="myapp"></div>
+<script>
+  var app = Elm.Main.init({
+    node: document.getElementById('myapp')
+  });
+</script>

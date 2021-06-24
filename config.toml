@@ -7,6 +7,10 @@ enableGitInfo = true
 
 pygmentsCodefences = true
 pygmentsUseClasses = true
+
+[markup.goldmark.renderer]
+unsafe= true
+
 [params]
 BookRepo = 'https://github.com/BinderDavid/abstract-machines-script'
 BookEditPath = 'blob/main'
