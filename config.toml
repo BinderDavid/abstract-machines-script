@@ -14,5 +14,5 @@ unsafe= true
 [params]
 BookRepo = 'https://github.com/BinderDavid/abstract-machines-script'
 BookEditPath = 'blob/main'
-
+BookSearch = false
 
