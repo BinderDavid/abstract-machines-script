@@ -13,12 +13,7 @@ weight: 3
 
 ## Example Javascript embedding
 
-<div id="myapp"></div>
-<script>
-  var app = Elm.Main.init({
-    node: document.getElementById('myapp')
-  });
-</script>
+{{% embedelm %}}
 
 ## Further Reading
 
