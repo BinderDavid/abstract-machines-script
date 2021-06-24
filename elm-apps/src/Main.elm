@@ -42,5 +42,5 @@ view model =
 viewHelper : String -> Html Msg
 viewHelper str = div [] (case AE.parse str of
                               Ok res -> [text (AE.showTerm res ++ " ~~> " ++ AE.showValue (AE.eval res))
-                                        , AE.renderAST (AE.toTree res)]
+                                        , Html.p [] [AE.renderAST (AE.toTree res)]]
                               Err err -> [text "Parsing error"])

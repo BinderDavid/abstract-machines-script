@@ -13,28 +13,23 @@ depth : DerivTree a b -> Int
 depth t = case t of
               Node xs _ _ -> Maybe.withDefault 0 (List.maximum (List.map depth xs))
 
+
+
+
+-- Adapted the solution by user "CSSProof" on stackoverflow:
+-- https://stackoverflow.com/questions/16212364/how-do-i-display-a-proof-tree-with-html-css-and-or-javascript 
 render : DerivTree a b
        -> (a -> Html msg) -- How to render judgements.
        -> (b -> Html msg) -- How to render rule labels.
        -> Html msg
 render (Node premisses conclusion label) renderJudgement renderLabel =
-    table [] [ tr [] (List.append
-                          (List.map (\premis -> td [] [render premis renderJudgement renderLabel]) premisses)
-                          [td [class "rulename", rowspan 2] [div [class "rulename"][renderLabel label]]])
-             , tr [] [td [class "conc"] [renderJudgement conclusion]]
-             ]
-
---Debug.todo "implement"
-
- -- <table>
- --                <tr>
- --                    <td></td>
- --                    <td class="rulename" rowspan="2">
- --                        <div class="rulename">const</div>
- --                    </td>
- --                </tr>
- --                <tr>
- --                    <td class="conc">&#x393;&#x022A2;1:&#x3C4;</td>
- --                </tr>
- -- </table>
+    div [class "proof"]
+        [ div [class "prems"] (List.intersperse
+                                   (div [class "inter-proof"][])
+                                   (List.map (\premis -> render premis renderJudgement renderLabel) premisses))
+        , div [class "concl"] [ div [class "concl-left"] []
+                              , div [class "concl-center"] [renderJudgement conclusion]
+                              , div [class "concl-right"] []
+                              ]
+        ]
 

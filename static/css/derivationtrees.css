@@ -1,11 +1,49 @@
-   td {
-       text-align:center;
-       height: 1em;
-       vertical-align:bottom;
-   }
-   td.conc {
-       border-top: solid 1px;
-   }
-   div.rulename {
-       margin-top:-2em;
-   }
+/*
+Adapted the solution by user "CSSProof" on stackoverflow:
+https://stackoverflow.com/questions/16212364/how-do-i-display-a-proof-tree-with-html-css-and-or-javascript 
+*/
+.proof
+{
+    display: inline-flex;
+    flex-direction: column;
+}
+.prems
+{
+    display: inline-flex;
+    flex-wrap: nowrap;
+    align-items: flex-end;
+}
+.inter-proof
+{
+    border-bottom: 1px solid black;
+    width: 1em;
+}
+.concl
+{
+    display: inline-flex;
+    margin-top: -1px;
+}
+.concl-left
+{
+    flex-grow: 1;
+}
+.concl-center
+{
+    border-top: 1px solid black;
+}
+.concl-right
+{
+    flex-grow: 1;
+}
+.prems > .proof:not(:first-child) > .concl > .concl-left
+{
+    border-bottom: 1px solid black;
+}
+.prems > .proof > .concl > .concl-center
+{
+    border-bottom: 1px solid black;
+}
+.prems > .proof:not(:last-child) > .concl > .concl-right
+{
+    border-bottom: 1px solid black;
+}
