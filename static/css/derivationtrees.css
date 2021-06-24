@@ -1,0 +1,11 @@
+   td {
+       text-align:center;
+       height: 1em;
+       vertical-align:bottom;
+   }
+   td.conc {
+       border-top: solid 1px;
+   }
+   div.rulename {
+       margin-top:-2em;
+   }

@@ -5,6 +5,7 @@ import Html exposing (Html, button, div, text, input)
 import Html.Events exposing (onInput)
 import Html.Attributes exposing (..)
 import AE as AE
+import TreeView
 
 -- MAIN
 
@@ -39,6 +40,7 @@ view model =
     ]
 
 viewHelper : String -> Html Msg
-viewHelper str = div [] [ text (case AE.parse str of
-                                   Ok res -> AE.showTerm res
-                                   Err err -> "Parsing error")]
+viewHelper str = div [] (case AE.parse str of
+                              Ok res -> [text (AE.showTerm res ++ " ~~> " ++ AE.showValue (AE.eval res))
+                                        , AE.renderAST (AE.toTree res)]
+                              Err err -> [text "Parsing error"])

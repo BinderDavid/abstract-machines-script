@@ -1,6 +1,9 @@
 module AE exposing (..)
 
 import Parser as P exposing (Parser, (|=), (|.), spaces, symbol, succeed, oneOf, andThen, lazy)
+import String exposing (fromInt)
+import TreeView exposing (..)
+import Html exposing (..)
 
 type Term
     = T
@@ -76,3 +79,53 @@ showTerm t = case t of
                  Pred s -> "pred " ++ showTerm s
                  IsZero s -> "isZero " ++ showTerm s
                  IfExpr s p q -> "if " ++ showTerm s ++ " then " ++ showTerm p ++ " else " ++ showTerm q
+
+-- Evaluation
+
+type Value
+    = ValBool Bool
+    | ValInt Int
+    | ValError String
+
+showValue : Value -> String
+showValue v = case v of
+                  ValBool True -> "true"
+                  ValBool False -> "false"
+                  ValInt i -> fromInt i
+                  ValError err -> "Error: " ++ err
+
+eval : Term -> Value
+eval tm = case tm of
+              T -> ValBool True
+              F -> ValBool False
+              Zero -> ValInt 0
+              Succ tm2 -> case eval tm2 of
+                              ValInt i -> ValInt (i + 1)
+                              _ -> ValError "Applied Succ to non-int value"
+              Pred tm2 -> case eval tm2 of
+                              ValInt i -> ValInt (i - 1)
+                              _ -> ValError "Applied Pred to non-int value"
+              IsZero tm2 -> case eval tm2 of
+                                ValInt i -> if i == 0 then ValBool True else ValBool False
+                                _ -> ValError "Applied IsZero to non-int value"
+              IfExpr tm2 tm3 tm4 -> case eval tm2 of
+                                        ValBool True -> eval tm3
+                                        ValBool False -> eval tm4
+                                        _ -> ValError "Applied IfExpr to non-bool value"
+
+
+-- AST Tree
+
+toTree : Term -> DerivTree Term String
+toTree tm = case tm of
+                T -> Node [] tm "T"
+                F -> Node [] tm "F"
+                Zero -> Node [] tm "Zero"
+                (Succ tm2) -> Node [toTree tm2] tm "Succ"
+                (Pred tm2) -> Node [toTree tm2] tm "Pred"
+                (IsZero tm2) -> Node [toTree tm2] tm "IsZero"
+                (IfExpr tm2 tm3 tm4) -> Node [toTree tm2, toTree tm3, toTree tm4] tm "If"
+
+
+renderAST : DerivTree Term String -> Html msg
+renderAST tree = render tree (\tm -> text (showTerm tm)) (\label -> text label)
