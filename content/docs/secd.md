@@ -13,6 +13,17 @@ weight: 3
 
 ## Example Javascript embedding
 
+Consider the grammar for arithmetic expressions, where `n` is a natural number.
+
+```
+tm ::= n
+    | (tm + tm)
+    | (tm * tm)
+```
+
+Every expression which corresponds to this grammar will generate a parsing tree, you can try
+this out by typing in an expression below.
+
 {{% embedelm %}}
 
 ## Further Reading

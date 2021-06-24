@@ -5,127 +5,95 @@ import String exposing (fromInt)
 import TreeView exposing (..)
 import Html exposing (..)
 
-type Term
-    = T
-    | F
-    | Zero
-    | Succ Term
-    | Pred Term
-    | IsZero Term
-    | IfExpr Term Term Term
+type AE_Term
+    = AE_Int Int
+    | AE_Add AE_Term AE_Term
+    | AE_Mult AE_Term AE_Term
 
 -- Parser
 
-parse : String -> Result (List P.DeadEnd) Term
-parse str = P.run term str
+parse : String -> Result (List P.DeadEnd) AE_Term
+parse str = P.run ae_termP str
 
-term : Parser Term
-term = succeed identity
-       |. spaces
-       |= oneOf
-          [ true
-          , false
-          , zero
-          , succ
-          , pred
-          , isZero
-          , lazy (\_ -> ifExpr)
-          ]
+ae_termP : Parser AE_Term
+ae_termP = succeed identity
+         |. spaces
+         |= oneOf
+            [ ae_intP
+            , lazy (\_ -> P.backtrackable ae_addP)
+            , lazy (\_ -> ae_multP)
+            ]
 
-true : Parser Term
-true = succeed T |. symbol "true"
+ae_intP : Parser AE_Term
+ae_intP = P.int |> P.map (\i -> AE_Int i)
 
-false : Parser Term
-false = succeed F |. symbol "false"
-
-zero : Parser Term
-zero = succeed Zero |. symbol "zero"
-
-succ : Parser Term
-succ = symbol "succ"
-     |> andThen (\_ -> term)
-     |> P.map (\t -> Succ t)
-
-pred : Parser Term
-pred = symbol "pred"
-     |> andThen (\_ -> term)
-     |> P.map (\t -> Pred t)
-
-isZero : Parser Term
-isZero = symbol "isZero"
-     |> andThen (\_ -> term)
-     |> P.map (\t -> IsZero t)
-
-ifExpr : Parser Term
-ifExpr =
-    succeed IfExpr
-        |. symbol "if"
-        |= term
+ae_addP : Parser AE_Term
+ae_addP = succeed AE_Add
+        |. symbol "("
+        |= ae_termP
         |. spaces
-        |. symbol "then"
-        |= term
+        |. symbol "+"
+        |= ae_termP
         |. spaces
-        |. symbol "else"
-        |= term
+        |. symbol ")"
+        |. spaces
+
+
+ae_multP : Parser AE_Term
+ae_multP = succeed AE_Mult
+        |. symbol "("
+        |= ae_termP
+        |. spaces
+        |. symbol "*"
+        |= ae_termP
+        |. spaces
+        |. symbol ")"
+        |. spaces
 
 -- Prettyprinter
 
-showTerm : Term -> String
+showTerm : AE_Term -> String
 showTerm t = case t of
-                 T -> "true"
-                 F -> "false"
-                 Zero -> "zero"
-                 Succ s -> "succ " ++ showTerm s
-                 Pred s -> "pred " ++ showTerm s
-                 IsZero s -> "isZero " ++ showTerm s
-                 IfExpr s p q -> "if " ++ showTerm s ++ " then " ++ showTerm p ++ " else " ++ showTerm q
+                   AE_Int i -> fromInt i
+                   AE_Add t1 t2 -> "(" ++ showTerm t1 ++ "+" ++ showTerm t2 ++ ")"
+                   AE_Mult t1 t2 ->  "(" ++ showTerm t1 ++ "*" ++ showTerm t2 ++ ")"
+
 
 -- Evaluation
 
 type Value
-    = ValBool Bool
-    | ValInt Int
+    = ValInt Int
     | ValError String
 
 showValue : Value -> String
 showValue v = case v of
-                  ValBool True -> "true"
-                  ValBool False -> "false"
                   ValInt i -> fromInt i
                   ValError err -> "Error: " ++ err
 
-eval : Term -> Value
+eval : AE_Term -> Value
 eval tm = case tm of
-              T -> ValBool True
-              F -> ValBool False
-              Zero -> ValInt 0
-              Succ tm2 -> case eval tm2 of
-                              ValInt i -> ValInt (i + 1)
-                              _ -> ValError "Applied Succ to non-int value"
-              Pred tm2 -> case eval tm2 of
-                              ValInt i -> ValInt (i - 1)
-                              _ -> ValError "Applied Pred to non-int value"
-              IsZero tm2 -> case eval tm2 of
-                                ValInt i -> if i == 0 then ValBool True else ValBool False
-                                _ -> ValError "Applied IsZero to non-int value"
-              IfExpr tm2 tm3 tm4 -> case eval tm2 of
-                                        ValBool True -> eval tm3
-                                        ValBool False -> eval tm4
-                                        _ -> ValError "Applied IfExpr to non-bool value"
-
+              AE_Int i -> ValInt i
+              AE_Add tm1 tm2 -> case eval tm1 of
+                                    ValInt i1 -> case eval tm2 of
+                                                     ValInt i2 -> ValInt (i1 + i2)
+                                                     ValError err -> ValError err
+                                    ValError err -> ValError err
+              AE_Mult tm1 tm2 -> case eval tm1 of
+                                    ValInt i1 -> case eval tm2 of
+                                                     ValInt i2 -> ValInt (i1 * i2)
+                                                     ValError err -> ValError err
+                                    ValError err -> ValError err
 
 -- AST Tree
 
-toTree : Term -> DerivTree Term String
+toTree : AE_Term -> DerivTree AE_Term String
 toTree tm = case tm of
-                T -> Node [] tm "T"
-                F -> Node [] tm "F"
-                Zero -> Node [] tm "Zero"
-                (Succ tm2) -> Node [toTree tm2] tm "Succ"
-                (Pred tm2) -> Node [toTree tm2] tm "Pred"
-                (IsZero tm2) -> Node [toTree tm2] tm "IsZero"
-                (IfExpr tm2 tm3 tm4) -> Node [toTree tm2, toTree tm3, toTree tm4] tm "If"
+                AE_Int i -> Node [] tm "Int"
+                AE_Add tm1 tm2 -> Node [toTree tm1, toTree tm2] tm "Add"
+                AE_Mult tm1 tm2 -> Node [toTree tm1, toTree tm2] tm "Mult"
 
 
-renderAST : DerivTree Term String -> Html msg
-renderAST tree = render tree (\tm -> text (showTerm tm)) (\label -> text label)
+renderAST : DerivTree AE_Term String -> Html msg
+renderAST tree = render tree (\tm -> text ("$$ " ++ (showTerm tm) ++ " \\in \\mathit{Tm} $$")) (\label -> text label)
+
+
