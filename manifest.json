@@ -1,14 +1,14 @@
 {
   "name": "Abstract Machines",
   "short_name": "Abstract Machines",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "/abstract-machines-script/",
+  "scope": "/abstract-machines-script/",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
   "icons": [
     {
-      "src": "/favicon.svg",
+      "src": "/abstract-machines-script/favicon.svg",
       "sizes": "512x512"
     }
   ]
