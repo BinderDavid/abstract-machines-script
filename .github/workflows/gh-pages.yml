@@ -14,7 +14,18 @@ jobs:
         with:
           submodules: true  # Fetch Hugo themes (true OR recursive)
           fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
-
+      - name: Setup Elm
+        uses: jorelali/setup-elm@v3
+        with:
+          elm-version: 0.19.1
+      - name: Run Elm compiler
+        run: |
+          cd elm-apps
+          mkdir -p target
+          elm make src/Main.elm  --optimize --output=target/elm.js
+          cd ..
+          mkdir -p static/javascript
+          cp elm-apps/target/* static/javascript/
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
