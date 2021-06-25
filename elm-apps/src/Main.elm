@@ -10,25 +10,29 @@ import TreeView
 -- MAIN
 
 main =
-  Browser.sandbox { init = init, update = update, view = view }
+  Browser.element { init = init
+                  , update = update
+                  , subscriptions = \_ -> Sub.none
+                  , view = view
+                  }
 
 -- MODEL
 
 type alias Model = { inputString : String }
 
-init : Model
-init = { inputString = "" }
+init : () -> (Model, Cmd Msg)
+init = \_ -> ({ inputString = "" }, Cmd.none)
 
 
 -- UPDATE
 
 type Msg = TextChange String
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     TextChange str ->
-         { model | inputString = str }
+         ({ model | inputString = str }, Cmd.none)
 
 -- VIEW
 
