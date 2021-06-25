@@ -1,4 +1,4 @@
-baseURL = "http://example.org/"
+baseURL = "https://binderdavid.github.io/abstract-machines-script/"
 languageCode = "en-us"
 title = "Abstract Machines"
 theme = "book"
