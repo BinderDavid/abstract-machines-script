@@ -1,4 +1,4 @@
-module Main exposing (..)
+port module Main exposing (..)
 import Browser
 import Debug exposing (todo)
 import Html exposing (Html, button, div, text, input)
@@ -26,13 +26,15 @@ init = \_ -> ({ inputString = "" }, Cmd.none)
 
 -- UPDATE
 
+port sendMessage : () -> Cmd msg
+
 type Msg = TextChange String
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     TextChange str ->
-         ({ model | inputString = str }, Cmd.none)
+         ({ model | inputString = str }, sendMessage ())
 
 -- VIEW
 
