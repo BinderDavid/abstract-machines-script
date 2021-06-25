@@ -18,8 +18,8 @@
 <!-- Theme stylesheet, you can customize scss by creating `assets/custom.scss` in your website -->
 {{- $styles := resources.Get "book.scss" | resources.ExecuteAsTemplate "book.scss" . | resources.ToCSS | resources.Minify | resources.Fingerprint }}
 <link rel="stylesheet" href="{{ $styles.RelPermalink }}" {{ template "integrity" $styles }}>
-<link rel="stylesheet" href="/css/syntax.css">
-<link rel="stylesheet" href="/css/derivationtrees.css">
+<link rel="stylesheet" href="/css/syntax.css" crossorigin="anonymous">
+<link rel="stylesheet" href="/css/derivationtrees.css" crossorigin="anonymous">
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 <script type="text/javascript" id="MathJax-script" async
   src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
