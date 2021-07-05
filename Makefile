@@ -1,5 +1,8 @@
+JSPATH = static/javascript/
 .PHONY: gen-apps
 gen-apps:
+	mkdir -p $(JSPATH)
 	$(MAKE) -C elm-apps
-	mkdir -p static/javascript
-	cp elm-apps/target/* static/javascript/
+	cp elm-apps/target/* $(JSPATH)
+	$(MAKE) -C purescript-apps
+	cp purescript-apps/purescript.js $(JSPATH)
