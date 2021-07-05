@@ -14,6 +14,9 @@ jobs:
         with:
           submodules: true  # Fetch Hugo themes (true OR recursive)
           fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
+      # ----------------------------------------
+      # Build Elm Applications
+      # ----------------------------------------
       - name: Setup Elm
         uses: jorelali/setup-elm@v3
         with:
@@ -26,6 +29,24 @@ jobs:
           cd ..
           mkdir -p static/javascript
           cp elm-apps/target/* static/javascript/
+      # ----------------------------------------
+      # Build Purescript Applications
+      # ----------------------------------------
+      - name: Setup Purescript
+        uses: purescript-contrib/setup-purescript@main
+        with:
+          purescript: "0.14.2"
+          spago: "0.20.3"
+      - name: Build Purescript
+        run: |
+          cd purescript-apps
+          spago bundle-app --to purescript.js
+          cd ..
+          mkdir -p static/javascript
+          cp purescript-apps/purescript.js static/javascript/
+      # ----------------------------------------
+      # Use Hugo to build Website
+      # ----------------------------------------
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
@@ -34,7 +55,9 @@ jobs:
 
       - name: Build
         run: hugo --minify
-
+      # ----------------------------------------
+      # Deploy website
+      # ----------------------------------------
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: github.ref == 'refs/heads/main'
