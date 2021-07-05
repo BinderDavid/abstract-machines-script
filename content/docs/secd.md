@@ -26,6 +26,11 @@ this out by typing in an expression below.
 
 {{% embedelm %}}
 
+## Embed Purescript
+
+If purescript works, then a number should be logged to the dev console.
+<script src="/abstract-machines-script/javascript/purescript.js"></script>
+
 ## Further Reading
 
 {{< hint info >}}
